@@ -1,5 +1,8 @@
 package com.example.dailyhelper;
 
+import java.util.List;
+import java.util.Map;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.support.v4.app.FragmentActivity;
@@ -14,8 +17,9 @@ public class MainActivity extends FragmentActivity {
 
 	private FragmentTabHost mTabHost;
 	private RadioGroup m_radioGroup;
-	String tabs[] = {"Home","Exercise","Config"};
-	Class cls[] = {MainFragment.class,ExerciseFragment.class,ConfigFragment.class};
+	private String tabs[] = {"Home","Exercise","Config"};
+	private Class cls[] = {MainFragment.class,ExerciseFragment.class,ConfigFragment.class};
+	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +27,7 @@ public class MainActivity extends FragmentActivity {
 		setContentView(R.layout.activity_main);
 		init();
 	}
-
+	
 	private void init()
 	{
 		mTabHost = (FragmentTabHost)this.findViewById(android.R.id.tabhost);
