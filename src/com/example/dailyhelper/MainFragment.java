@@ -21,6 +21,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ListView;
 import android.widget.Toast;
 
 public class MainFragment extends Fragment{
@@ -28,6 +30,12 @@ public class MainFragment extends Fragment{
 	private LocationManager locManager;
 	
 	private View layoutView;
+	
+	//跳转到新activity，添加新的提醒
+	private Button addTask;
+	
+	//列表
+	private ListView taskList;
 	
 	//数据文件地址
 	private final String PLACE_FILE = "place.bin";
@@ -46,6 +54,26 @@ public class MainFragment extends Fragment{
 		};
 	
 	private List<Prompt> promptData = new ArrayList<Prompt>();
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		layoutView = inflater.inflate(R.layout.main_fragment, null); 
+		initData();
+		initList();
+		return layoutView;
+	}
+	
+	private void initList()
+	{
+		taskList = (ListView) layoutView.findViewById(R.id.task_list);
+		updateListView();
+		addTask = (Button) layoutView.findViewById(R.id.add_task);
+	}
+	
+	private void updateListView()
+	{
+		
+	}
 	
 	private void initData()
 	{
@@ -100,13 +128,6 @@ public class MainFragment extends Fragment{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		layoutView = inflater.inflate(R.layout.main_fragment, null); 
-		initData();
-		return layoutView;
 	}
 	
 	private int getPlaceID()
