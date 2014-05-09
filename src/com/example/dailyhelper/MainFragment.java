@@ -23,9 +23,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+<<<<<<< HEAD
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+=======
+import android.widget.Button;
+import android.widget.ListView;
+>>>>>>> 936ad54e8a6686de05597e8ab76b844ef09441b4
 import android.widget.Toast;
 
 public class MainFragment extends Fragment{
@@ -34,6 +39,7 @@ public class MainFragment extends Fragment{
 	
 	private View layoutView;
 	
+<<<<<<< HEAD
 	//各个控件
 	private TextView statusText;
 	private TextView promptText;
@@ -41,6 +47,13 @@ public class MainFragment extends Fragment{
 	
 	//根据经纬度算距离的公式中常量
 	private final double EARTH_RADIUS = 6378137.0;
+=======
+	//跳转到新activity，添加新的提醒
+	private Button addTask;
+	
+	//列表
+	private ListView taskList;
+>>>>>>> 936ad54e8a6686de05597e8ab76b844ef09441b4
 	
 	//数据文件地址
 	private final String PLACE_FILE = "place.bin";
@@ -84,6 +97,26 @@ public class MainFragment extends Fragment{
         	 }
          }  
      };
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		layoutView = inflater.inflate(R.layout.main_fragment, null); 
+		initData();
+		initList();
+		return layoutView;
+	}
+	
+	private void initList()
+	{
+		taskList = (ListView) layoutView.findViewById(R.id.task_list);
+		updateListView();
+		addTask = (Button) layoutView.findViewById(R.id.add_task);
+	}
+	
+	private void updateListView()
+	{
+		
+	}
 	
 	private void initData()
 	{
@@ -165,6 +198,7 @@ public class MainFragment extends Fragment{
 		}
 	}
 	
+<<<<<<< HEAD
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		layoutView = inflater.inflate(R.layout.main_fragment, null); 
@@ -183,6 +217,8 @@ public class MainFragment extends Fragment{
 		return layoutView;
 	}
 	
+=======
+>>>>>>> 936ad54e8a6686de05597e8ab76b844ef09441b4
 	private int getPlaceID()
 	{//获得地点编号
 		return 0;
