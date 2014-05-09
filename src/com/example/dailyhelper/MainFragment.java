@@ -3,24 +3,29 @@ package com.example.dailyhelper;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainFragment extends Fragment{
@@ -28,6 +33,14 @@ public class MainFragment extends Fragment{
 	private LocationManager locManager;
 	
 	private View layoutView;
+	
+	//各个控件
+	private TextView statusText;
+	private TextView promptText;
+	private ListView taskList;
+	
+	//根据经纬度算距离的公式中常量
+	private final double EARTH_RADIUS = 6378137.0;
 	
 	//数据文件地址
 	private final String PLACE_FILE = "place.bin";
@@ -46,6 +59,31 @@ public class MainFragment extends Fragment{
 		};
 	
 	private List<Prompt> promptData = new ArrayList<Prompt>();
+	private String[] promptItem = {"id", "time", "promptText", "type"};
+	private String[][] promptInitData = 
+		{
+			{"1", "9:00", "上午一杯谁有益健康", "daily"},
+			{"2", "12:00", "该吃午饭了", "daily"}
+		};
+	
+	//根据接收信息，更新显示条目
+	private Handler mHandler = new Handler(){  
+		  
+         @Override  
+         public void handleMessage(Message msg) {  
+        	 int index = msg.what;
+        	 if(msg.what != -1)
+        	 {
+        		 statusText.setText(placeTypeData.get(index).name);
+        		 promptText.setText(placeTypeData.get(index).prompt);
+        	 }
+        	 else
+        	 {
+        		 statusText.setText("你在哪啊？请添加地点");
+        		 promptText.setText("陌生地点或者路上请注意安全！");
+        	 }
+         }  
+     };
 	
 	private void initData()
 	{
@@ -96,6 +134,31 @@ public class MainFragment extends Fragment{
 				fos.close();
 			}
 			//初始化提醒
+			tmp = new File(this.getActivity().getFilesDir().getPath().toString() + "/" + PROMPT_FILE);
+			if(tmp.exists()){//存在则直接读取信息
+				FileInputStream fis = new FileInputStream(tmp);
+				BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+				String placeStr;
+				while((placeStr = br.readLine())!=null)
+				{
+					String[] strs = placeStr.split(" ");
+					promptData.add(new Prompt(strs));
+				}
+				fis.close();
+			}
+			else{//不存在则创建，并输入初始值
+				tmp.createNewFile();
+				FileOutputStream fos = new FileOutputStream(tmp);
+				for(int i=0; i<promptInitData.length; i++)
+				{
+					promptData.add(new Prompt(promptInitData[i]));
+					String wr = promptInitData[i][0]+" "+promptInitData[i][1]+" "+promptInitData[i][2]+" "+promptInitData[i][3];
+					wr+="\n";
+					fos.write(wr.getBytes());
+				}
+				fos.close();
+			}
+			Collections.sort(promptData, new SortByTime());
 		}catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -105,7 +168,18 @@ public class MainFragment extends Fragment{
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		layoutView = inflater.inflate(R.layout.main_fragment, null); 
+		statusText = (TextView)layoutView.findViewById(R.id.status);
+		promptText = (TextView)layoutView.findViewById(R.id.prompt);
+		taskList = (ListView)layoutView.findViewById(R.id.task_list);
+		//SimpleAdapter simpleAdapter = new SimpleAdapter(this.getActivity(), listItems,
+		//		R.layout.task_list_item, new String[]{"Time", "Prompt"}, new int[]{R.id.task_time, R.id.task_prompt});
+		//init data
 		initData();
+		
+		//init ListView
+		
+		
+		getPlaceIDFromeGPS();
 		return layoutView;
 	}
 	
@@ -119,7 +193,7 @@ public class MainFragment extends Fragment{
 		return 0;
 	}
 	
-	private int getPlaceIDFromeGPS()
+	private void getPlaceIDFromeGPS()
 	{//通过GPS定位信息确定地点
 		locManager = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
 		Location location = locManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -150,7 +224,6 @@ public class MainFragment extends Fragment{
 				
 			}
 		});
-		return 0;
 	}
 	
 	private void updateView(Location location) {
@@ -164,17 +237,49 @@ public class MainFragment extends Fragment{
 			sb.append("\n纬度：");
 			sb.append(location.getLatitude());
 			Toast.makeText(this.getActivity(), sb.toString(), Toast.LENGTH_LONG).show();
+			//找到所处地点
+			double longitude = location.getLongitude();
+			double latitude = location.getLatitude();
+			for(int i=0; i<placeData.size(); i++)
+			{
+				double radio=0.0;
+				int index = 0;
+				for(int j=0; j<placeTypeData.size(); j++)
+				{
+					if(placeData.get(i).placeType.equals(placeTypeData.get(j).id))
+					{
+						radio = Double.parseDouble(placeTypeData.get(j).radio);
+						index = j;
+						break;
+					}
+				}
+				if(gps2m(longitude, latitude, Double.parseDouble(placeData.get(i).longitud),
+						Double.parseDouble(placeData.get(i).latitude))<=radio)
+				{//匹配到输入地点，跟新控件
+					mHandler.sendEmptyMessage(index);
+					return;
+				}
+			}
+			mHandler.sendEmptyMessage(-1);
 		}
 		else
 		{
-			Toast.makeText(this.getActivity(), "貌似出问题了！", Toast.LENGTH_LONG).show();
+			Toast.makeText(this.getActivity(), "暂时无法获得定位信息！", Toast.LENGTH_LONG).show();
 		}
 	}
-
-	private void readAllPlaces()
-	{//读取所有的地点信息
-		
-	}
+	
+	private double gps2m(double lat_a, double lng_a, double lat_b, double lng_b) {
+	       double radLat1 = (lat_a * Math.PI / 180.0);
+	       double radLat2 = (lat_b * Math.PI / 180.0);
+	       double a = radLat1 - radLat2;
+	       double b = (lng_a - lng_b) * Math.PI / 180.0;
+	       double s = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a / 2), 2)
+	              + Math.cos(radLat1) * Math.cos(radLat2)
+	              * Math.pow(Math.sin(b / 2), 2)));
+	       s = s * EARTH_RADIUS;
+	       s = Math.round(s * 10000) / 10000;
+	       return s;
+	    }
 	
 	class Place
 	{
@@ -245,6 +350,29 @@ public class MainFragment extends Fragment{
 			time = i[1];
 			promptText = i[2];
 			type = i[3];
+		}
+	}
+	
+	class SortByTime implements Comparator {
+		public int compare(Object o1, Object o2) {
+			Prompt a = (Prompt)o1;
+			Prompt b = (Prompt)o2;
+			String[] timeA = a.time.split(":");
+			String[] timeB = b.time.split(":");
+			Log.v("timeA", timeA[0]);
+			Log.v("timeB", timeB[0]);
+			if (Integer.parseInt(timeA[0])>Integer.parseInt(timeB[0]))
+				return 1;
+			else if (Integer.parseInt(timeA[0])<Integer.parseInt(timeB[0]))
+				return -1;
+			else{
+				if(Integer.parseInt(timeA[1])>Integer.parseInt(timeB[1]))
+					return 1;
+				else if(Integer.parseInt(timeA[1])<Integer.parseInt(timeB[1]))
+					return -1;
+				else
+					return 0;
+			}
 		}
 	}
 }

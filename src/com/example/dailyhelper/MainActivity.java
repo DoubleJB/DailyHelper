@@ -3,10 +3,22 @@ package com.example.dailyhelper;
 import java.util.List;
 import java.util.Map;
 
+import com.example.dailyhelper.ExerciseFragment.StepReceiver;
+import com.example.dailyhelper.StepService.ICallback;
+
 import android.os.Bundle;
+import android.os.IBinder;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.RadioButton;
@@ -20,13 +32,19 @@ public class MainActivity extends FragmentActivity {
 	private String tabs[] = {"Home","Exercise","Config"};
 	private Class cls[] = {MainFragment.class,ExerciseFragment.class,ConfigFragment.class};
 	
+	private StepReceiver stepReceiver;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		init();
+		
+		Log.v("startService", "do");
+		
+		startService(new Intent(this, StepService.class));
 	}
+	
 	
 	private void init()
 	{
@@ -58,4 +76,33 @@ public class MainActivity extends FragmentActivity {
 
 		((RadioButton) m_radioGroup.getChildAt(0)).toggle();
 	}
+	
+//	private StepService mStepService;
+//	
+//	private ServiceConnection conn = new ServiceConnection()
+//	{
+//
+//		@Override
+//		public void onServiceConnected(ComponentName className, IBinder service) {
+//			// TODO Auto-generated method stub
+//			mStepService =  ((StepService.StepBinder)service).getService();
+//			Log.v("conn", "do");
+//			//mStepService.registerCallback(mCallbcak);
+//		}
+//
+//		@Override
+//		public void onServiceDisconnected(ComponentName name) {
+//			// TODO Auto-generated method stub
+//			mStepService = null;
+//		}
+//		
+//	};
+	
+//	public void setCallback(StepService.ICallback s)
+//	{
+//		Log.v("setCallback", "do");
+//		mCallbcak = s;
+//	}
+//	
+//	private StepService.ICallback mCallbcak;
 }

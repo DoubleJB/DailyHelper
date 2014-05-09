@@ -14,6 +14,9 @@ public final class R {
     }
     public static final class attr {
     }
+    public static final class color {
+        public static final int yellow=0x7f050000;
+    }
     public static final class dimen {
         /**  Default screen margins, per the Android Design guidelines. 
 
@@ -21,8 +24,8 @@ public final class R {
          screen margins) for sw720dp devices (e.g. 10" tablets) in landscape here.
     
          */
-        public static final int activity_horizontal_margin=0x7f050000;
-        public static final int activity_vertical_margin=0x7f050001;
+        public static final int activity_horizontal_margin=0x7f060000;
+        public static final int activity_vertical_margin=0x7f060001;
     }
     public static final class drawable {
         public static final int btn_background=0x7f020000;
@@ -47,26 +50,33 @@ public final class R {
         public static final int tab_widget_background=0x7f020013;
     }
     public static final class id {
-        public static final int RadioButton0=0x7f080002;
-        public static final int RadioButton1=0x7f080003;
-        public static final int RadioButton2=0x7f080004;
-        public static final int analogClock1=0x7f080007;
-        public static final int main_radiogroup=0x7f080001;
-        public static final int prompt=0x7f080006;
-        public static final int realtabcontent=0x7f080000;
-        public static final int start_image=0x7f080009;
-        public static final int status=0x7f080005;
-        public static final int task_list=0x7f080008;
+        public static final int RadioButton0=0x7f090002;
+        public static final int RadioButton1=0x7f090003;
+        public static final int RadioButton2=0x7f090004;
+        public static final int analogClock1=0x7f09000c;
+        public static final int main_radiogroup=0x7f090001;
+        public static final int prompt=0x7f09000b;
+        public static final int realtabcontent=0x7f090000;
+        public static final int start_image=0x7f09000e;
+        public static final int status=0x7f09000a;
+        public static final int step_cal=0x7f090007;
+        public static final int step_config=0x7f090009;
+        public static final int step_encourage=0x7f090008;
+        public static final int step_time=0x7f090006;
+        public static final int steps_text=0x7f090005;
+        public static final int task_list=0x7f09000d;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
-        public static final int main_fragment=0x7f030001;
-        public static final int start_view=0x7f030002;
+        public static final int exercise_frag=0x7f030001;
+        public static final int main_fragment=0x7f030002;
+        public static final int start_view=0x7f030003;
     }
     public static final class string {
-        public static final int app_name=0x7f060000;
-        public static final int hello_world=0x7f060001;
-        public static final int menu_settings=0x7f060002;
+        public static final int app_name=0x7f070000;
+        public static final int hello_world=0x7f070001;
+        public static final int menu_settings=0x7f070002;
+        public static final int today=0x7f070003;
     }
     public static final class style {
         /**         <item name="android:taskOpenEnterAnimation">@null</item>
@@ -79,8 +89,8 @@ public final class R {
         <item name="android:taskToBackEnterAnimation">@null</item>
         <item name="android:taskToBackExitAnimation">@null</item>
          */
-        public static final int Animation=0x7f070003;
-        public static final int AnimationTheme=0x7f070004;
+        public static final int Animation=0x7f080003;
+        public static final int AnimationTheme=0x7f080004;
         /** 
         Base application theme for API 11+. This theme completely replaces
         AppBaseTheme from res/values/styles.xml on API 11+ devices.
@@ -93,9 +103,9 @@ public final class R {
     
  API 14 theme customizations can go here. 
          */
-        public static final int AppBaseTheme=0x7f070005;
-        public static final int btn_style=0x7f070002;
-        public static final int tab_item_background=0x7f070001;
-        public static final int tab_item_text_style=0x7f070000;
+        public static final int AppBaseTheme=0x7f080005;
+        public static final int btn_style=0x7f080002;
+        public static final int tab_item_background=0x7f080001;
+        public static final int tab_item_text_style=0x7f080000;
     }
 }
