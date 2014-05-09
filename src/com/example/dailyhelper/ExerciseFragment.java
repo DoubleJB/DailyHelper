@@ -13,6 +13,7 @@ import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +27,11 @@ public class ExerciseFragment extends Fragment{
 	private static TextView stepTimeText;
 	private static TextView stepCalText;
 	private static TextView stepEncourText;
+	private TextView stepToday;
 	private Button stepConfig;
+	
+	private int phoneHeight;
+	private int phoneWidth;
 	
 	private static int steps;
 	private static double stepCal;
@@ -59,12 +64,12 @@ public class ExerciseFragment extends Fragment{
 		@Override 
 		public void handleMessage(Message msg) {
 			//stepText.setText("steps: " + (int)msg.arg1);
-			UpdateData((int)msg.arg1);
-			UpdateView();
+			updateData((int)msg.arg1);
+			updateView();
 		}
 	};
 	
-	private static void UpdateView()
+	private static void updateView()
 	{
 		//更新组件内容
 		stepText.setText(""+steps);
@@ -77,7 +82,7 @@ public class ExerciseFragment extends Fragment{
 		stepEncourText.setText(encourageText[index]);
 	}
 	
-	private static void UpdateData(int st)
+	private static void updateData(int st)
 	{
 		//更新卡路里
 		stepCal += 
@@ -93,9 +98,13 @@ public class ExerciseFragment extends Fragment{
 			long nowTime = System.currentTimeMillis();
 			if(nowTime-lastStepTime<MAX_DELTA_TIME)
 			{
-				mStepTimer.addTime(nowTime-lastStepTime);				
+				if(mStepTimer.addTime(nowTime-lastStepTime))
+					lastStepTime = nowTime;			
 			}
-			lastStepTime = nowTime;
+			else
+			{
+				lastStepTime = nowTime;
+			}
 		}
 		//更新步数
 		steps++;
@@ -114,6 +123,11 @@ public class ExerciseFragment extends Fragment{
 		mIsRunning = false;
 	}
 	
+	private void setViewPre()
+	{//在这里获得不同设备的宽高，设置各组件的大小和字体的大小，此处需要修改
+		Display display = this.getActivity().getWindowManager().getDefaultDisplay(); 
+	}
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		layoutView = inflater.inflate(R.layout.exercise_frag, null); 
@@ -122,9 +136,11 @@ public class ExerciseFragment extends Fragment{
 		stepCalText = (TextView)layoutView.findViewById(R.id.step_cal);
 		stepEncourText = (TextView)layoutView.findViewById(R.id.step_encourage);
 		stepConfig = (Button)layoutView.findViewById(R.id.step_config);
+		stepToday = (TextView)layoutView.findViewById(R.id.step_today);
 		
 		initData();
-		UpdateView();
+		setViewPre();
+		updateView();
 		
 		//注册广播收听
 		LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(getActivity());
@@ -159,11 +175,24 @@ public class ExerciseFragment extends Fragment{
 			seconds = 0;
 		}
 		
-		public void addTime(long timeP)
+		public boolean addTime(long timeP)
 		{
+			if(timeP<1000)
+				return false;
+			Log.v("addTime", ""+timeP);
 			hours+=timeP/1000/60/60;
-			minutes+=(timeP%(1000*60*60))/1000*60;
+			minutes+=(timeP%(1000*60*60))/(1000*60);
 			seconds+=(timeP%(1000*60))/1000;
+			
+			if(seconds>=60){
+				minutes+=seconds/60;
+				seconds%=60;
+			}
+			if(minutes>=60){
+				hours+=minutes/60;
+				minutes%=60;
+			}
+			return true;
 		}
 		
 		public String toString()
@@ -180,6 +209,7 @@ public class ExerciseFragment extends Fragment{
 			if(seconds<10 )
 				r.append('0');
 			r.append(seconds);
+			Log.v("tostring", ""+hours+":"+minutes+":"+seconds);
 			return r.toString();
 		}
 	}
