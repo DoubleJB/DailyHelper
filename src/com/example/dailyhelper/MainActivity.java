@@ -77,32 +77,4 @@ public class MainActivity extends FragmentActivity {
 		((RadioButton) m_radioGroup.getChildAt(0)).toggle();
 	}
 	
-//	private StepService mStepService;
-//	
-//	private ServiceConnection conn = new ServiceConnection()
-//	{
-//
-//		@Override
-//		public void onServiceConnected(ComponentName className, IBinder service) {
-//			// TODO Auto-generated method stub
-//			mStepService =  ((StepService.StepBinder)service).getService();
-//			Log.v("conn", "do");
-//			//mStepService.registerCallback(mCallbcak);
-//		}
-//
-//		@Override
-//		public void onServiceDisconnected(ComponentName name) {
-//			// TODO Auto-generated method stub
-//			mStepService = null;
-//		}
-//		
-//	};
-	
-//	public void setCallback(StepService.ICallback s)
-//	{
-//		Log.v("setCallback", "do");
-//		mCallbcak = s;
-//	}
-//	
-//	private StepService.ICallback mCallbcak;
 }

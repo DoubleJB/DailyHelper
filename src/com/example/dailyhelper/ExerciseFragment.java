@@ -1,5 +1,7 @@
 package com.example.dailyhelper;
 
+import java.text.DecimalFormat;
+
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -12,12 +14,15 @@ import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ExerciseFragment extends Fragment{
@@ -28,7 +33,9 @@ public class ExerciseFragment extends Fragment{
 	private static TextView stepCalText;
 	private static TextView stepEncourText;
 	private TextView stepToday;
-	private Button stepConfig;
+	private ImageButton stepConfig;
+	private ImageView clockImg;
+	private ImageView fireImg;
 	
 	private int phoneHeight;
 	private int phoneWidth;
@@ -72,9 +79,12 @@ public class ExerciseFragment extends Fragment{
 	private static void updateView()
 	{
 		//更新组件内容
-		stepText.setText(""+steps);
+		
+		stepText.setText(""+steps+"步");
 		stepTimeText.setText(mStepTimer.toString());
-		stepCalText.setText(""+(int)stepCal);
+		DecimalFormat a = new DecimalFormat("#.##");
+		String s= a.format(stepCal);
+		stepCalText.setText(s);
 		int index;
 		index = (int)(((double)steps)/((double)targetSteps)*10);
 		if(index>10)
@@ -98,8 +108,7 @@ public class ExerciseFragment extends Fragment{
 			long nowTime = System.currentTimeMillis();
 			if(nowTime-lastStepTime<MAX_DELTA_TIME)
 			{
-				if(mStepTimer.addTime(nowTime-lastStepTime))
-					lastStepTime = nowTime;			
+				lastStepTime += mStepTimer.addTime(nowTime-lastStepTime);			
 			}
 			else
 			{
@@ -107,7 +116,8 @@ public class ExerciseFragment extends Fragment{
 			}
 		}
 		//更新步数
-		steps++;
+		Log.v("step",""+st);
+		steps = st;
 	}
 	
 	private void initData() {
@@ -126,6 +136,22 @@ public class ExerciseFragment extends Fragment{
 	private void setViewPre()
 	{//在这里获得不同设备的宽高，设置各组件的大小和字体的大小，此处需要修改
 		Display display = this.getActivity().getWindowManager().getDefaultDisplay(); 
+		DisplayMetrics outMetrics = new DisplayMetrics();
+		display.getMetrics(outMetrics);
+		phoneHeight = outMetrics.heightPixels;
+		phoneWidth = outMetrics.widthPixels;
+		Log.v("h&w", ""+phoneHeight+" "+phoneWidth);
+		
+		
+		stepToday.setTextSize(40);
+		stepText.setTextSize(60);
+		stepTimeText.setTextSize(40);
+		stepCalText.setTextSize(40);
+		stepEncourText.setTextSize(20);
+		Log.v("height", ""+stepTimeText.getHeight());
+		clockImg.setMaxHeight((int)(40*2));
+		fireImg.setMaxHeight((int)(40*2));
+		stepConfig.setMaxHeight(10);
 	}
 	
 	@Override
@@ -135,12 +161,20 @@ public class ExerciseFragment extends Fragment{
 		stepTimeText = (TextView)layoutView.findViewById(R.id.step_time);
 		stepCalText = (TextView)layoutView.findViewById(R.id.step_cal);
 		stepEncourText = (TextView)layoutView.findViewById(R.id.step_encourage);
-		stepConfig = (Button)layoutView.findViewById(R.id.step_config);
+		stepConfig = (ImageButton)layoutView.findViewById(R.id.step_config);
 		stepToday = (TextView)layoutView.findViewById(R.id.step_today);
+		clockImg = (ImageView)layoutView.findViewById(R.id.clock_img);
+		fireImg = (ImageView)layoutView.findViewById(R.id.fire_img);
 		
+		if(stepText == null)
+			Log.v("stepText", "null");
+		else
+			Log.v("stepText", "not null");
 		initData();
 		setViewPre();
 		updateView();
+		
+		
 		
 		//注册广播收听
 		LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(getActivity());
@@ -175,11 +209,10 @@ public class ExerciseFragment extends Fragment{
 			seconds = 0;
 		}
 		
-		public boolean addTime(long timeP)
+		public long addTime(long timeP)
 		{
 			if(timeP<1000)
-				return false;
-			Log.v("addTime", ""+timeP);
+				return 0;
 			hours+=timeP/1000/60/60;
 			minutes+=(timeP%(1000*60*60))/(1000*60);
 			seconds+=(timeP%(1000*60))/1000;
@@ -192,7 +225,7 @@ public class ExerciseFragment extends Fragment{
 				hours+=minutes/60;
 				minutes%=60;
 			}
-			return true;
+			return timeP/1000*1000;
 		}
 		
 		public String toString()
@@ -209,7 +242,6 @@ public class ExerciseFragment extends Fragment{
 			if(seconds<10 )
 				r.append('0');
 			r.append(seconds);
-			Log.v("tostring", ""+hours+":"+minutes+":"+seconds);
 			return r.toString();
 		}
 	}
