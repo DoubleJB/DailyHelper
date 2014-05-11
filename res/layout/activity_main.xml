@@ -11,7 +11,7 @@
         android:id="@android:id/tabhost"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#00CCFF" >
+        android:background="#FFFAFA" >
 
         <LinearLayout
             android:layout_width="match_parent"

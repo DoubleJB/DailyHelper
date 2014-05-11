@@ -1,6 +1,9 @@
 package com.example.dailyhelper;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -8,10 +11,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.DisplayMetrics;
@@ -33,7 +38,6 @@ public class ExerciseFragment extends Fragment{
 	private static TextView stepCalText;
 	private static TextView stepEncourText;
 	private TextView stepToday;
-	private ImageButton stepConfig;
 	private ImageView clockImg;
 	private ImageView fireImg;
 	
@@ -65,6 +69,10 @@ public class ExerciseFragment extends Fragment{
     private static double IMPERIAL_WALKING_FACTOR = 0.517;
     
     private static long MAX_DELTA_TIME = 10000;
+    
+    private SharedPreferences mSettings;
+    private LocalBroadcastManager broadcastManager = null;
+    private Boolean serIsRunning = false;
     
 	private static Handler mHandler = new Handler()
 	{
@@ -121,16 +129,67 @@ public class ExerciseFragment extends Fragment{
 	}
 	
 	private void initData() {
-		//初始化各个数据，有些数据需要从文件中读取，这里需要修改
-		steps = 0;
-		stepCal = 0;
-		lastStepTime = 0;
-		mStepTimer = new StepTimer();
-		
-		mStepLength = (float) 0.5;
-		mBodyWeight = 60;
-		targetSteps = 10000;
-		mIsRunning = false;
+		mSettings = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
+		SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
+		String nowTime=format.format(new Date());
+		if(mSettings.getInt("init", 0) == 0)
+		{//程序安装后第一次运行，则设置相关初始化数值
+			SharedPreferences.Editor editor = mSettings.edit();
+			editor.putInt("init", 1);
+			editor.putString("date", nowTime);
+			
+			editor.putInt("steps", 0);
+			steps = 0;
+			
+			editor.putFloat("step_cal", 0);
+			stepCal = 0;
+			
+			editor.putFloat("last_step_time", 0);
+			lastStepTime = 0;
+			
+			mStepTimer = new StepTimer();
+			editor.putString("step_timer", mStepTimer.toString());
+			
+			editor.putFloat("step_length", (float) 0.5);
+			mStepLength = (float) 0.5;
+			
+			editor.putFloat("body_weight", (float) 60);
+			mStepLength = (float) 60;
+			
+			editor.putInt("target_steps", 10000);
+			targetSteps = 10000;
+			
+			editor.putInt("is_running", 0);
+			mIsRunning = false;
+		}
+		else if(nowTime.equals(mSettings.getString("date", "")))
+		{//程序之前运行过，但今天是第一次运行
+			//初始化各个数据，有些数据需要从文件中读取，这里需要修改
+			SharedPreferences.Editor editor = mSettings.edit();
+			editor.putString("date", nowTime);
+			steps = 0;
+			stepCal = 0;
+			lastStepTime = 0;
+			mStepTimer = new StepTimer();
+			
+			mStepLength = mSettings.getFloat("step_length", (float)0.5);
+			mBodyWeight = mSettings.getFloat("body_weight", (float)60);
+			targetSteps = mSettings.getInt("target_steps", 10000);
+			if(mSettings.getInt("is_running", 0) == 0)
+				mIsRunning = false;
+		}
+		else
+		{//今天运行过，读取之前得数据继续执行
+			steps = mSettings.getInt("steps", 0);
+			stepCal = mSettings.getFloat("step_cal", 0);
+			lastStepTime = mSettings.getInt("last_step_time", 0);
+			mStepTimer = new StepTimer(mSettings.getString("step_timer", "0:0:0"));
+			mStepLength = mSettings.getFloat("step_length", (float)0.5);
+			mBodyWeight = mSettings.getFloat("body_weight", (float)60);
+			targetSteps = mSettings.getInt("target_steps", 10000);
+			if(mSettings.getInt("is_running", 0) == 0)
+				mIsRunning = false;
+		}
 	}
 	
 	private void setViewPre()
@@ -151,7 +210,6 @@ public class ExerciseFragment extends Fragment{
 		Log.v("height", ""+stepTimeText.getHeight());
 		clockImg.setMaxHeight((int)(40*2));
 		fireImg.setMaxHeight((int)(40*2));
-		stepConfig.setMaxHeight(10);
 	}
 	
 	@Override
@@ -161,31 +219,40 @@ public class ExerciseFragment extends Fragment{
 		stepTimeText = (TextView)layoutView.findViewById(R.id.step_time);
 		stepCalText = (TextView)layoutView.findViewById(R.id.step_cal);
 		stepEncourText = (TextView)layoutView.findViewById(R.id.step_encourage);
-		stepConfig = (ImageButton)layoutView.findViewById(R.id.step_config);
 		stepToday = (TextView)layoutView.findViewById(R.id.step_today);
 		clockImg = (ImageView)layoutView.findViewById(R.id.clock_img);
 		fireImg = (ImageView)layoutView.findViewById(R.id.fire_img);
 		
-		if(stepText == null)
-			Log.v("stepText", "null");
-		else
-			Log.v("stepText", "not null");
-		initData();
+		if(!serIsRunning)
+			initData();
+		serIsRunning = true;
 		setViewPre();
 		updateView();
 		
-		
-		
 		//注册广播收听
-		LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(getActivity());
-		IntentFilter filter = new IntentFilter();
-		filter.addAction("com.example.dailyhelper.STEP_ACTION");
-		Log.v("exFrag", "regis");
-		broadcastManager.registerReceiver(new StepReceiver(),filter);
+		if(broadcastManager == null){
+			broadcastManager = LocalBroadcastManager.getInstance(getActivity());
+			IntentFilter filter = new IntentFilter();
+			filter.addAction("com.example.dailyhelper.STEP_ACTION");
+			Log.v("exFrag", "regis");
+			broadcastManager.registerReceiver(new StepReceiver(),filter);
+		}
 		
 		return layoutView;
 	}
 
+	@Override 
+	public void onDestroyView()
+	{
+		super.onDestroyView();
+		SharedPreferences.Editor editor = mSettings.edit();
+		
+		editor.putInt("steps", steps);	
+		editor.putFloat("step_cal", (float)stepCal);
+		editor.putFloat("last_step_time", lastStepTime);
+		editor.putString("step_timer", mStepTimer.toString());
+	}
+	
 	static public class StepReceiver extends BroadcastReceiver
 	{
 		@Override
@@ -207,6 +274,14 @@ public class ExerciseFragment extends Fragment{
 			hours = 0;
 			minutes = 0;
 			seconds = 0;
+		}
+		
+		public StepTimer(String time)
+		{
+			String[] tmp = time.split(":");
+			hours = Integer.parseInt(tmp[0]);
+			minutes = Integer.parseInt(tmp[1]);
+			seconds = Integer.parseInt(tmp[2]);
 		}
 		
 		public long addTime(long timeP)

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <PreferenceCategory
+            android:title="hello">
+            
+        <com.example.dailyhelper.perference.stepLength
+                android:key="step_length"
+                android:title="step length"
+                android:summary="lalal"
+                android:dialogTitle="enter"
+                android:defaultValue="20" />
+    </PreferenceCategory>
+</PreferenceScreen>
