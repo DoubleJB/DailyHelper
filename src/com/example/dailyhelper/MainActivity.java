@@ -8,6 +8,7 @@ import com.example.dailyhelper.StepService.ICallback;
 
 import android.os.Bundle;
 import android.os.IBinder;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -20,15 +21,19 @@ import android.support.v4.app.FragmentTabHost;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.widget.SpinnerAdapter;
 
 public class MainActivity extends FragmentActivity {
 
 	private FragmentTabHost mTabHost;
 	private RadioGroup m_radioGroup;
+	private ActionBar actionBar;
 	private String tabs[] = {"Home","Exercise","Config"};
 	private Class cls[] = {MainFragment.class,ExerciseFragment.class,ConfigFragment.class};
 	
@@ -38,11 +43,14 @@ public class MainActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		actionBar = getActionBar();
 		init();
 		
 		Log.v("startService", "do");
 		
 		startService(new Intent(this, StepService.class));
+		
+
 	}
 	
 	
@@ -63,12 +71,16 @@ public class MainActivity extends FragmentActivity {
 				switch(checkedId){
 				case R.id.RadioButton0:
 					mTabHost.setCurrentTabByTag(tabs[0]);
+					actionBar.setTitle("0");
+					
 					break;
 				case R.id.RadioButton1:
 					mTabHost.setCurrentTabByTag(tabs[1]);
+					actionBar.setTitle("1");
 					break;
 				case R.id.RadioButton2:
 					mTabHost.setCurrentTabByTag(tabs[2]);
+					actionBar.setTitle("2");
 					break;
 				}
 			}
@@ -77,4 +89,26 @@ public class MainActivity extends FragmentActivity {
 		((RadioButton) m_radioGroup.getChildAt(0)).toggle();
 	}
 	
+	
+	private void updateMenu(int checkedId)
+	{
+		// 生成一个SpinnerAdapter
+        SpinnerAdapter adapter;// = ArrayAdapter.createFromResource(this, R.array.student, android.R.layout.simple_spinner_dropdown_item);
+        // 得到ActionBar
+        // 将ActionBar的操作模型设置为NAVIGATION_MODE_LIST
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        // 为ActionBar设置下拉菜单和监听器
+        actionBar.setListNavigationCallbacks(adapter, new DropDownListenser());
+		switch(checkedId){
+		case R.id.RadioButton0:
+			
+			break;
+		case R.id.RadioButton1:
+
+			break;
+		case R.id.RadioButton2:
+
+			break;
+		}
+	}
 }

@@ -34,7 +34,7 @@ public class StepDetector implements SensorEventListener{
 		// TODO Auto-generated method stub
 		
 	}
-
+	
 	@Override
 	public void onSensorChanged(SensorEvent event) {
 		// TODO Auto-generated method stub
@@ -86,6 +86,11 @@ public class StepDetector implements SensorEventListener{
         }
 	}
 
+	public void setSensitivity(float newSen)
+	{
+		mLimit = newSen;
+	}
+	
 	public interface Listener {
         public void passValue(int value);
     }

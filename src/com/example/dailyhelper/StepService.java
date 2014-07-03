@@ -3,12 +3,14 @@ package com.example.dailyhelper;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class StepService extends Service{
@@ -27,6 +29,9 @@ public class StepService extends Service{
 		Log.v("service create", "do");
 		mStepDetector = new StepDetector();
 		mStepDetector.setListener(mListener);
+		SharedPreferences SharedPreferences = this.getSharedPreferences("dailyHelper", Context.MODE_WORLD_READABLE);
+		mStepDetector.setSensitivity(SharedPreferences.getFloat("sensitivity", 10));
+		
 		mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 		sensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 		mSensorManager.registerListener(mStepDetector, sensor, SensorManager.SENSOR_DELAY_FASTEST);
