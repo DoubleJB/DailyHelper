@@ -69,8 +69,13 @@ public final class R {
         public static final int clock_img=0x7f0b000d;
         public static final int config_item=0x7f0b0006;
         public static final int config_item_array=0x7f0b0007;
+        public static final int data_daily=0x7f0b0019;
+        public static final int data_once=0x7f0b001a;
+        public static final int data_picker=0x7f0b001c;
+        public static final int data_type=0x7f0b0018;
+        public static final int data_week=0x7f0b001b;
         public static final int fire_img=0x7f0b000f;
-        public static final int main_menu=0x7f0b0018;
+        public static final int main_menu=0x7f0b0027;
         public static final int main_radiogroup=0x7f0b0001;
         public static final int prompt=0x7f0b0013;
         public static final int realtabcontent=0x7f0b0000;
@@ -83,7 +88,17 @@ public final class R {
         public static final int step_time=0x7f0b000e;
         public static final int step_today=0x7f0b000a;
         public static final int steps_text=0x7f0b000b;
+        public static final int task_content=0x7f0b0025;
         public static final int task_list=0x7f0b0016;
+        public static final int task_time=0x7f0b0026;
+        public static final int time_picker=0x7f0b0024;
+        public static final int week_Thur=0x7f0b0021;
+        public static final int week_fri=0x7f0b0022;
+        public static final int week_mon=0x7f0b001e;
+        public static final int week_sat=0x7f0b0023;
+        public static final int week_sun=0x7f0b001d;
+        public static final int week_tues=0x7f0b001f;
+        public static final int week_wed=0x7f0b0020;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
@@ -92,6 +107,9 @@ public final class R {
         public static final int exercise_frag=0x7f030003;
         public static final int main_fragment=0x7f030004;
         public static final int start_view=0x7f030005;
+        public static final int task_config=0x7f030006;
+        public static final int tasklist=0x7f030007;
+        public static final int tasklist_item=0x7f030008;
     }
     public static final class menu {
         public static final int main_frag_menu=0x7f0a0000;
@@ -100,6 +118,7 @@ public final class R {
         public static final int app_name=0x7f080000;
         public static final int hello_world=0x7f080001;
         public static final int menu_settings=0x7f080002;
+        public static final int task_name=0x7f080004;
         public static final int today=0x7f080003;
     }
     public static final class style {

@@ -12,6 +12,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -21,6 +22,9 @@ import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -89,6 +93,13 @@ public class MainFragment extends Fragment{
          }  
      };
 	
+     @Override
+     public void onCreate(Bundle savedInstanceState) {
+         // TODO Auto-generated method stub
+         super.onCreate(savedInstanceState);
+         setHasOptionsMenu(true);
+     }
+     
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		layoutView = inflater.inflate(R.layout.main_fragment, null); 
@@ -96,6 +107,22 @@ public class MainFragment extends Fragment{
 		initList();
 		return layoutView;
 	}
+	
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // TODO Auto-generated method stub
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        menu.add("Config Task").setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+    }
+      
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // 启动一个新的activity 用来管理任务的内容， 里面有添加删除的菜单，具体点一项任务后可以进入修改界面
+        Intent intent = new Intent(this.getActivity(), TaskManagerActivity.class);
+        startActivity(intent);
+        return super.onOptionsItemSelected(item);
+    }
+	
 	
 	private void initList()
 	{

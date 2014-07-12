@@ -27,6 +27,11 @@
             </intent-filter>
         </activity>
         
+        <activity
+            android:name="com.example.dailyhelper.TaskManagerActivity"
+            android:label="@string/task_name" >
+        </activity>
+        
         <receiver android:name=".ExerciseFragment$StepReceiver">
             <intent-filter >
                 <action android:name="com.example.dailyhelper.STEP_ACTION"/>

@@ -9,6 +9,7 @@ import com.example.dailyhelper.StepService.ICallback;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.app.ActionBar;
+import android.app.ActionBar.OnNavigationListener;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -89,26 +90,4 @@ public class MainActivity extends FragmentActivity {
 		((RadioButton) m_radioGroup.getChildAt(0)).toggle();
 	}
 	
-	
-	private void updateMenu(int checkedId)
-	{
-		// 生成一个SpinnerAdapter
-        SpinnerAdapter adapter;// = ArrayAdapter.createFromResource(this, R.array.student, android.R.layout.simple_spinner_dropdown_item);
-        // 得到ActionBar
-        // 将ActionBar的操作模型设置为NAVIGATION_MODE_LIST
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        // 为ActionBar设置下拉菜单和监听器
-        actionBar.setListNavigationCallbacks(adapter, new DropDownListenser());
-		switch(checkedId){
-		case R.id.RadioButton0:
-			
-			break;
-		case R.id.RadioButton1:
-
-			break;
-		case R.id.RadioButton2:
-
-			break;
-		}
-	}
 }
