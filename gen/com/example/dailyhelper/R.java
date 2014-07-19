@@ -78,7 +78,7 @@ public final class R {
         public static final int delete_layout=0x7f0b0027;
         public static final int delete_submit=0x7f0b0028;
         public static final int fire_img=0x7f0b000f;
-        public static final int item_check=0x7f0b002a;
+        public static final int item_check=0x7f0b002b;
         public static final int main_menu=0x7f0b002c;
         public static final int main_radiogroup=0x7f0b0001;
         public static final int prompt=0x7f0b0013;
@@ -94,7 +94,7 @@ public final class R {
         public static final int steps_text=0x7f0b000b;
         public static final int task_content=0x7f0b0018;
         public static final int task_list=0x7f0b0016;
-        public static final int task_time=0x7f0b002b;
+        public static final int task_time=0x7f0b002a;
         public static final int time_picker=0x7f0b0026;
         public static final int week_Thur=0x7f0b0023;
         public static final int week_fri=0x7f0b0024;

@@ -16,6 +16,7 @@ import com.example.dailyhelper.MainFragment.Prompt;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
@@ -23,10 +24,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
@@ -46,10 +50,12 @@ public class TaskManagerActivity extends ListActivity {
 	private ListView list;
 	List<Map<String, Object>> listItems;
 	ArrayList<MyTask> taskList;
+	ArrayList<CheckBox> checkBoxes;
 	SimpleAdapter adapter;
 	LinearLayout layoutDelete;
 	Button deleteSubmit;
 	Button deleteCancel;
+	
 	
 	public Handler handler = new Handler(){
 		public void handleMessage(Message msg){
@@ -57,6 +63,7 @@ public class TaskManagerActivity extends ListActivity {
 			//adapter.notifyDataSetInvalidated();
 			list.setAdapter(adapter);
 			//list.refreshDrawableState();
+			//list.invalidate();
 		}
 	};
 	
@@ -68,6 +75,7 @@ public class TaskManagerActivity extends ListActivity {
 		
 		listItems = new ArrayList<Map<String, Object>>();
 		taskList = new ArrayList<MyTask>();
+		checkBoxes = new ArrayList<CheckBox>();
 		File tmp = new File(getFilesDir().getPath().toString() + "/" + PROMPT_FILE);
 		if(tmp.exists()){//存在则直接读取信息
 			try {
@@ -84,7 +92,6 @@ public class TaskManagerActivity extends ListActivity {
 					Map<String, Object> listItem = new HashMap<String, Object>();
 					listItem.put("content", aTask.content);
 					listItem.put("time", aTask.data+" "+aTask.time);
-					listItem.put("visible", "");
 					listItems.add(listItem);
 				}
 				fis.close();
@@ -113,10 +120,16 @@ public class TaskManagerActivity extends ListActivity {
 				// TODO Auto-generated method stub
 				
 				
-				for(int i=0; i<adapter.getCount(); i++)
+				for(int i=adapter.getCount()-1; i>=0; i--)
 	    		{
-	    			LinearLayout layout = (LinearLayout) adapter.getView(0, null, getListView());
+					LinearLayout layout = (LinearLayout) list.getChildAt(i);
+	    			//LinearLayout layout = (LinearLayout) adapter.getView(i, null, getListView());
 	    			((CheckBox)layout.findViewById(R.id.item_check)).setVisibility(CheckBox.INVISIBLE);
+	    			if(checkBoxes.get(i).isChecked())
+	    			{
+	    				listItems.remove(i);
+	    				taskList.remove(i);
+	    			}
 	    		}
 	    		layoutDelete.setVisibility(LinearLayout.GONE);
 	    		handler.sendMessage(new Message());
@@ -129,10 +142,11 @@ public class TaskManagerActivity extends ListActivity {
 				// TODO Auto-generated method stub
 				for(int i=0; i<adapter.getCount(); i++)
 	    		{
-	    			LinearLayout layout = (LinearLayout) adapter.getView(0, null, getListView());
+	    			LinearLayout layout = (LinearLayout) adapter.getView(i, null, getListView());
 	    			((CheckBox)layout.findViewById(R.id.item_check)).setVisibility(CheckBox.INVISIBLE);
 	    		}
 	    		layoutDelete.setVisibility(LinearLayout.GONE);
+	    		handler.sendMessage(new Message());
 			}
 		});
 	}
@@ -182,16 +196,19 @@ public class TaskManagerActivity extends ListActivity {
     		//若dianji 删除，则删除对应得项并恢复原actionbar和列表,否则直接恢复
     		//Log.v("layout", (String) ((TextView)layout.findViewById(R.id.task_content)).getText());
     		//显示所有的checkbox
+    		checkBoxes.clear();
     		for(int i=0; i<adapter.getCount(); i++)
     		{
-    			LinearLayout layout = (LinearLayout) adapter.getView(i, null, getListView());
+    			LinearLayout layout = (LinearLayout) list.getChildAt(i);
+    			//LinearLayout layout = (LinearLayout) adapter.getView(i, null, getListView());
     			Log.v("layout", (String) ((TextView)layout.findViewById(R.id.task_content)).getText());
     			//不能工作啊
-    			//((CheckBox)layout.findViewById(R.id.item_check)).setVisibility(CheckBox.INVISIBLE);
-    			listItems.get(i).put("visible", "");
+    			((CheckBox)layout.findViewById(R.id.item_check)).setVisibility(CheckBox.VISIBLE);
+    			checkBoxes.add((CheckBox)layout.findViewById(R.id.item_check));
     		}
     		layoutDelete.setVisibility(LinearLayout.VISIBLE);
-    		handler.sendMessage(new Message());
+    		layoutDelete.setFocusable(true);
+    		//handler.sendMessage(new Message());
 
     	}
     	else if(item.getTitle() == "ADD")
@@ -312,7 +329,8 @@ public class TaskManagerActivity extends ListActivity {
     @Override   
     protected void onListItemClick(ListView l, View v, int position, long id) {  
     	//新建一个对话框来设置任务，同时返回设置内容，修改的task内容
-        //Toast.makeText(this, "You click: " + position, Toast.LENGTH_SHORT).show();  
+        //Toast.makeText(this, "You click: " + position, Toast.LENGTH_SHORT).show();
+    	//((TextView)v.findViewById(R.id.task_content)).setVisibility(View.INVISIBLE);
     	TableLayout taskForm = (TableLayout)getLayoutInflater().inflate(R.layout.task_config, null);
     	final int clickedPosition = position;
     	//设置各控件内容和属性
@@ -481,5 +499,44 @@ public class TaskManagerActivity extends ListActivity {
 			this.content = strs[2];
 			this.data = strs[3];
 		}
+	}
+	
+	class TaskAdapter extends BaseAdapter{
+
+		// 填充数据的list  
+	    private ArrayList<String> list;  
+	    // 上下文  
+	    private Context context;  
+	    // 用来导入布局  
+	    private LayoutInflater inflater = null;  
+	      
+	    // 构造器  
+	    public TaskAdapter(ArrayList<String> list, Context context) {  
+	        this.context = context;  
+	        this.list = list;  
+	        inflater = LayoutInflater.from(context);  
+	    }  
+	  
+	    @Override  
+	    public int getCount() {  
+	        return list.size();  
+	    }  
+	  
+	    @Override  
+	    public Object getItem(int position) {  
+	        return list.get(position);  
+	    }  
+	  
+	    @Override  
+	    public long getItemId(int position) {  
+	        return position;  
+	    }  
+	  
+	    @Override  
+	    public View getView(int position, View convertView, ViewGroup parent) {  
+
+	        return convertView;  
+	    }  
+		
 	}
 }
