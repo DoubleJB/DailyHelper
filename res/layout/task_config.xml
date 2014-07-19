@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:orientation="vertical" >
     <TableRow>
         <LinearLayout 
@@ -11,10 +11,11 @@
 	        <TextView
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
-	            android:text="Content:"
-	            android:textSize="10pt"
+	            android:text="内容:"
+	            android:textSize="8pt"
 	            />
 	        <EditText 
+	            android:id="@+id/task_content"
 	            android:layout_width="fill_parent"
 	            android:layout_height="wrap_content"
 	            android:selectAllOnFocus="true"
@@ -26,90 +27,97 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Data:"
-            android:textSize="10pt"
+            android:text="日期:"
+            android:textSize="8pt"
             />
+    </TableRow>
+    <TableRow >
         <RadioGroup android:id="@+id/data_type"
-            android:orientation="horizontal"
-            android:layout_gravity="center_horizontal">
+            android:orientation="horizontal">
             <RadioButton 
                 android:id="@+id/data_daily"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
-	            android:text="Daily"
+	            android:text="每天"
 	            android:checked="true"
             />
             <RadioButton 
                 android:id="@+id/data_once"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
-	            android:text="Once"
+	            android:text="一次"
             />
             <RadioButton 
                 android:id="@+id/data_week"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
-	            android:text="Week"
+	            android:text="每周"
             />
         </RadioGroup>
-        
     </TableRow>
     <TableRow>
         <DatePicker android:id="@+id/data_picker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
             android:calendarViewShown="false"
             android:spinnersShown="true"/>
     </TableRow>
     <TableRow>
         <LinearLayout 
-		    android:layout_width="match_parent"
+            android:id="@+id/week_layout"
+		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
 		    android:orientation="horizontal" >
 	        <CheckBox android:id="@+id/week_sun"
 	            android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="Sun"/>
+				android:text="日"
+				android:textSize="4pt"/>
 	        <CheckBox android:id="@+id/week_mon"
 	            android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="Mon"/>
+				android:text="一"
+				android:textSize="4pt"/>
 	        <CheckBox android:id="@+id/week_tues"
 	            android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="Tues"/>
+				android:text="二"
+				android:textSize="4pt"/>
 	        <CheckBox android:id="@+id/week_wed"
 	            android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="Wed"/>
+				android:text="三"
+				android:textSize="4pt"/>
 	        <CheckBox android:id="@+id/week_Thur"
 	            android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="Thur"/>
+				android:text="四"
+				android:textSize="4pt"/>
 	        <CheckBox android:id="@+id/week_fri"
 	            android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="Fri"/>
+				android:text="五"
+				android:textSize="4pt"/>
 	        <CheckBox android:id="@+id/week_sat"
 	            android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="Sat"/>
+				android:text="六"
+				android:textSize="4pt"/>
         </LinearLayout>
     </TableRow>
     <TableRow>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Time:"
-            android:textSize="10pt"
+            android:text="时间:"
+            android:textSize="8pt"
             />
     </TableRow>
     <TableRow>
+
         <TimePicker android:id="@+id/time_picker"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"/>
+            android:layout_height="100dp"/>
     </TableRow>
     
 </TableLayout>

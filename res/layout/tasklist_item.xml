@@ -2,20 +2,29 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
-    <TextView android:id="@+id/task_content"
+    android:orientation="horizontal" >
+    <CheckBox 
+        android:id="@+id/item_check"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20dp"
-        android:textColor="#f0f"
-        android:padding="10dp"
-        />
-    
-    <TextView android:id="@+id/task_time"
+        android:visibility="visible"/>
+    <LinearLayout 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="14dp"
-        android:padding="10dp"
-        />
-
+        android:orientation="vertical">
+        <TextView android:id="@+id/task_content"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:textSize="20dp"
+	        android:textColor="#f0f"
+	        android:padding="10dp"
+	        />
+	    
+	    <TextView android:id="@+id/task_time"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:textSize="14dp"
+	        android:padding="10dp"
+	        />
+    </LinearLayout>
 </LinearLayout>

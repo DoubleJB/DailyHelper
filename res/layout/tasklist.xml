@@ -5,7 +5,24 @@
     android:layout_height="fill_parent">
     <ListView 
 	    android:layout_width="match_parent"
-	    android:layout_height="match_parent"
+	    android:layout_height="wrap_content"
 	    android:id="@id/android:list" >
     </ListView>
+    <LinearLayout
+        android:id="@+id/delete_layout"
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+        <Button 
+            android:id="@+id/delete_submit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="删除"/>
+        <Button 
+            android:id="@+id/delete_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="取消"/>
+    </LinearLayout>
 </LinearLayout>
