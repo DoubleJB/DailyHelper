@@ -135,8 +135,11 @@ public class ExerciseFragment extends Fragment{
 		@Override 
 		public void handleMessage(Message msg) {
 			//stepText.setText("steps: " + (int)msg.arg1);
-			updateData((int)msg.arg1);
-			updateView();
+			
+			if(stepText != null){
+				updateData((int)msg.arg1);
+				updateView();
+			}	
 		}
 	};
 	

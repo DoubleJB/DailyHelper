@@ -9,7 +9,11 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.example.dailyhelper.TaskManagerActivity.MyTask;
 
 import android.content.Context;
 import android.content.Intent;
@@ -53,18 +57,11 @@ public class MainFragment extends Fragment{
 	//数据文件地址
 	private final String PLACE_FILE = "place.bin";
 	private final String PROMPT_FILE = "prompt.bin";
-	private final String PLACE_TYPE_FILE = "place_type.bin";
 	//数据list
 	private List<Place> placeData = new ArrayList<Place>();
-	private String[] placeItem = {"id", "longitud", "latitude", "placeType"};
-	
-	private List<PlaceType> placeTypeData = new ArrayList<PlaceType>();
-	private String[] placeTypeItem = {"id", "name",	"radio", "prompt"};
-	private String[][] placeTypeInitData = 
-		{
-			{"1", "home", "15", "在家里要好好休息喔~"},
-			{"2", "classroom", "30", "上课要认真听讲呦~"}
-		};
+	private String[] placeItem = {"id", "longitud", "latitude", "placeType", "name", "radio", "prompt"};
+	private List<Map<String, Object>> listItems;
+	private SimpleAdapter adapter = null;
 	
 	private List<Prompt> promptData = new ArrayList<Prompt>();
 	private String[] promptItem = {"id", "time", "promptText", "type"};
@@ -82,8 +79,8 @@ public class MainFragment extends Fragment{
         	 int index = msg.what;
         	 if(msg.what != -1)
         	 {
-        		 statusText.setText(placeTypeData.get(index).name);
-        		 promptText.setText(placeTypeData.get(index).prompt);
+        		 statusText.setText(placeData.get(index).name);
+        		 promptText.setText(placeData.get(index).prompt);
         	 }
         	 else
         	 {
@@ -102,42 +99,74 @@ public class MainFragment extends Fragment{
      
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		layoutView = inflater.inflate(R.layout.main_fragment, null); 
+		layoutView = inflater.inflate(R.layout.main_fragment, null); 		
+		return layoutView;
+	}
+	
+	@Override
+	public void onStart()
+	{
+		super.onStart();
 		initData();
 		initList();
-		return layoutView;
+		Log.v("onStart", "called");
 	}
 	
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // TODO Auto-generated method stub
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();
-        menu.add("Config Task").setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        menu.add("编辑任务").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+       // menu.add("编辑地点").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
     }
       
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // 启动一个新的activity 用来管理任务的内容， 里面有添加删除的菜单，具体点一项任务后可以进入修改界面
-        Intent intent = new Intent(this.getActivity(), TaskManagerActivity.class);
-        startActivity(intent);
+        if(item.getTitle() == "编辑任务"){
+	    	Intent intent = new Intent(this.getActivity(), TaskManagerActivity.class);
+	        startActivity(intent);
+        }
+//        else if(item.getTitle() == "编辑地点"){
+//        	Intent intent = new Intent(this.getActivity(), PlaceManagerActivity.class);
+//	        startActivity(intent);
+//        }
         return super.onOptionsItemSelected(item);
+        
     }
 	
 	
 	private void initList()
 	{
 		taskList = (ListView) layoutView.findViewById(R.id.task_list);
+		listItems = new ArrayList<Map<String, Object>>();
 		updateListView();
-		addTask = (Button) layoutView.findViewById(R.id.add_task);
+		//addTask = (Button) layoutView.findViewById(R.id.add_task);
 	}
 	
 	private void updateListView()
 	{
-		
+		listItems.clear();
+		for(int i=0; i<promptData.size(); i++)
+		{
+			Prompt aTask = promptData.get(i);
+			Map<String, Object> listItem = new HashMap<String, Object>();
+			listItem.put("content", aTask.promptText);
+			listItem.put("time", aTask.type+" "+aTask.time);
+			listItems.add(listItem);
+		}
+		adapter = new SimpleAdapter(this.getActivity(), listItems, 
+				R.layout.tasklist_item,
+				new String[] {"content","time", "visible"},
+				new int[] {R.id.task_content, R.id.task_time, R.id.item_check});
+		taskList.setAdapter(adapter);
+		adapter.notifyDataSetChanged();
 	}
 	
 	private void initData()
 	{
+		placeData.clear();
+		promptData.clear();
 		try {
 			//初始化地点列表
 			Log.v("1", "1");
@@ -155,34 +184,6 @@ public class MainFragment extends Fragment{
 			}
 			else{//不存在则创建，并输入初始值
 				tmp.createNewFile();
-			}
-			//初始化地点类型列表
-			tmp = new File(this.getActivity().getFilesDir().getPath().toString() + "/" + PLACE_TYPE_FILE);
-			if(tmp.exists()){//存在则直接读取信息
-				Log.v("PLACE_TYPE_FILE", "exists");
-				FileInputStream fis = new FileInputStream(tmp);
-				BufferedReader br = new BufferedReader(new InputStreamReader(fis));
-				String placeStr;
-				while((placeStr = br.readLine())!=null)
-				{
-					String[] strs = placeStr.split(" ");
-					placeTypeData.add(new PlaceType(strs));
-				}
-				br.close();
-				fis.close();
-			}
-			else{//不存在则创建，并输入初始值
-				tmp.createNewFile();
-				Log.v("PLACE_TYPE_FILE", "create");
-				FileOutputStream fos = new FileOutputStream(tmp);
-				for(int i=0; i<placeTypeInitData.length; i++)
-				{
-					placeTypeData.add(new PlaceType(placeTypeInitData[i]));
-					String wr = placeTypeInitData[i][0]+" "+placeTypeInitData[i][1]+" "+placeTypeInitData[i][2]+" "+placeTypeInitData[i][3];
-					wr+="\n";
-					fos.write(wr.getBytes());
-				}
-				fos.close();
 			}
 			//初始化提醒
 			tmp = new File(this.getActivity().getFilesDir().getPath().toString() + "/" + PROMPT_FILE);
@@ -277,19 +278,11 @@ public class MainFragment extends Fragment{
 			{
 				double radio=0.0;
 				int index = 0;
-				for(int j=0; j<placeTypeData.size(); j++)
-				{
-					if(placeData.get(i).placeType.equals(placeTypeData.get(j).id))
-					{
-						radio = Double.parseDouble(placeTypeData.get(j).radio);
-						index = j;
-						break;
-					}
-				}
+				radio = Double.parseDouble(placeData.get(i).radio);
 				if(gps2m(longitude, latitude, Double.parseDouble(placeData.get(i).longitud),
 						Double.parseDouble(placeData.get(i).latitude))<=radio)
 				{//匹配到输入地点，跟新控件
-					mHandler.sendEmptyMessage(index);
+					mHandler.sendEmptyMessage(i);
 					return;
 				}
 			}
@@ -319,14 +312,18 @@ public class MainFragment extends Fragment{
 		public String id;
 		public String longitud;
 		public String latitude;
-		public String placeType;
+		public String name;
+		public String radio;
+		public String prompt;
 		
-		public Place(String i, String lo, String la, String pl)
+		public Place(String i, String lo, String la, String na, String ra, String prot)
 		{
 			id = i;
 			longitud = lo;
 			latitude = la;
-			placeType = pl;
+			name = na;
+			radio = ra;
+			prompt = prot;
 		}
 		
 		public Place(String[] i)
@@ -334,31 +331,9 @@ public class MainFragment extends Fragment{
 			id = i[0];
 			longitud = i[1];
 			latitude = i[2];
-			placeType = i[3];
-		}
-	}
-	
-	class PlaceType
-	{
-		public String id;
-		public String name;
-		public String radio;
-		public String prompt;
-		
-		public PlaceType(String i, String na, String ra, String pr)
-		{
-			id = i;
-			name = na;
-			radio = ra;
-			prompt = pr;
-		}
-		
-		public PlaceType(String[] i)
-		{
-			id = i[0];
-			name = i[1];
-			radio = i[2];
-			prompt = i[3];
+			name = i[3];
+			radio = i[4];
+			prompt = i[5];
 		}
 	}
 	

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
     <LinearLayout 
+        android:id="@+id/l_tmp"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
 	    android:orientation="horizontal" >
@@ -35,18 +36,39 @@
 		    android:layout_height="wrap_content" />
 	    </LinearLayout>
 	</LinearLayout>
-
-    <Button 
-        android:id="@+id/add_task"
-        android:layout_width="wrap_content"
+    <RadioGroup
+        android:id="@+id/r_tmp"
+        android:layout_alignParentBottom="true"
+		android:visibility="visible"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="addtask"/>
-    
+        android:layout_gravity="bottom"
+        android:background="@drawable/tab_widget_background"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="2dip" >
+
+        <RadioButton
+            style="@style/tab_item_background"
+            android:drawableTop="@drawable/tab_icon1"
+            android:text="主页" />
+
+        <RadioButton
+            style="@style/tab_item_background"
+            android:drawableTop="@drawable/tab_icon2"
+            android:text="课程" />
+
+        <RadioButton
+            style="@style/tab_item_background"
+            android:drawableTop="@drawable/tab_icon4"
+            android:text="设置" />
+
+    </RadioGroup>
     <ListView
+        android:layout_below="@id/l_tmp"
+        android:layout_above="@id/r_tmp"
         android:id="@+id/task_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
     </ListView>
-	
-    
-</LinearLayout>
+</RelativeLayout>

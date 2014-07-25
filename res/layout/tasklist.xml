@@ -1,28 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
-    <ListView 
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:id="@id/android:list" >
-    </ListView>
+    android:layout_height="fill_parent"
+    android:background="#FFFAFA" >
     <LinearLayout
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
         android:id="@+id/delete_layout"
         android:orientation="horizontal"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone">
         <Button 
             android:id="@+id/delete_submit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="删除"/>
+            android:text="删除"
+            android:background="#000"/>
         <Button 
             android:id="@+id/delete_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="取消"/>
+            android:text="取消"
+            android:background="#000"/>
     </LinearLayout>
-</LinearLayout>
+    <ListView 
+        android:layout_above="@id/delete_layout"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:id="@id/android:list" >
+    </ListView>
+</RelativeLayout>
